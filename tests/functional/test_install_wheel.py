@@ -826,6 +826,11 @@ def test_wheel_install_with_extras(
 
     script.pip("uninstall", "-y", "childpkg", "parent")
 
+    # install dependent package first (no extras)
+    script.pip("install", "--no-cache-dir", "--no-index", f"{parent_package}", f"{child_package}")
+    
+    script.pip("uninstall", "-y", "childpkg", "parent")
+
     # install dependent package first
     script.pip("install", "--no-cache-dir", "--no-index", "-f",
         data.find_links, f"{parent_package}[test]", f"{child_package}[test]")
