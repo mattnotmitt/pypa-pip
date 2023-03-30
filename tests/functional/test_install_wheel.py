@@ -800,3 +800,24 @@ def test_wheel_with_unknown_subdir_in_data_dir_has_reasonable_error(
 
     result = script.pip("install", "--no-index", str(wheel_path), expect_error=True)
     assert "simple-0.1.0.data/unknown/hello.txt" in result.stderr
+
+def test_wheel_install_with_extras(
+    script: PipTestEnvironment,
+    data: TestData,
+) -> None:
+    child_package = create_basic_wheel_for_package(
+        script,
+        "childpkg",
+        "0.1.0",
+        extras={"test": ["simple"]}
+    )
+    parent_package = create_basic_wheel_for_package(
+        script,
+        "parent",
+        "0.1.0",
+        depends=["childpkg"],
+        extras={"test": ["simple"]}
+    )
+    script.verbose = True
+    script.pip("install", "--no-cache-dir", "--no-index", "-f",
+        data.find_links, f"{parent_package}[test]", f"{child_package}[test]")
