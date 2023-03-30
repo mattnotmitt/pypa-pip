@@ -819,5 +819,13 @@ def test_wheel_install_with_extras(
         extras={"test": ["simple"]}
     )
     script.verbose = True
+
+    # install dependency first
+    script.pip("install", "--no-cache-dir", "--no-index", "-f",
+        data.find_links, f"{child_package}[test]", f"{parent_package}[test]")
+
+    script.pip("uninstall", "-y", "childpkg", "parent")
+
+    # install dependent package first
     script.pip("install", "--no-cache-dir", "--no-index", "-f",
         data.find_links, f"{parent_package}[test]", f"{child_package}[test]")
